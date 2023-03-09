@@ -1,0 +1,43 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Player : MonoBehaviour
+{
+    public float moveSpeed = 5.0f; // The speed of the player's movement
+    public float jumpForce = 10.0f; // The force of the player's jump
+    public float gravity = 20.0f; // The force of gravity acting on the player
+
+    public Camera playerCamera; // The camera object the player is using
+
+    private CharacterController characterController; // The character controller component
+
+    private Vector3 moveDirection; // The direction the player is moving
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        characterController = GetComponent<CharacterController>(); // Get the character controller component on the player object
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        // Get the input axis values for movement
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
+
+        // Calculate the movement direction based on the camera's forward and right directions
+        Vector3 forward = playerCamera.transform.forward;
+        Vector3 right = playerCamera.transform.right;
+        forward.y = 0f;
+        right.y = 0f;
+        forward.Normalize();
+        right.Normalize();
+        moveDirection = (forward * verticalInput) + (right * horizontalInput);
+
+        // Apply the movement direction and speed to the character controller
+        moveDirection *= moveSpeed;
+        moveDirection.y -= gravity * Time.deltaTime;
+        characterController.Move(moveDirection * Time.deltaTime);
+}
