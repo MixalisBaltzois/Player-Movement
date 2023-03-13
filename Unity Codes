@@ -6,6 +6,7 @@ public class Player : MonoBehaviour
 {
     public float moveSpeed = 5.0f; // The speed of the player's movement
     public float jumpForce = 10.0f; // The force of the player's jump
+    public float runSpeed = 10.0f; // The speed of the player's movement when running
     public float gravity = 20.0f; // The force of gravity acting on the player
 
     public Camera playerCamera; // The camera object the player is using
@@ -13,7 +14,8 @@ public class Player : MonoBehaviour
     private CharacterController characterController; // The character controller component
 
     private Vector3 moveDirection; // The direction the player is moving
-
+    
+    public Animator anime;
     // Start is called before the first frame update
     void Start()
     {
@@ -37,7 +39,85 @@ public class Player : MonoBehaviour
         moveDirection = (forward * verticalInput) + (right * horizontalInput);
 
         // Apply the movement direction and speed to the character controller
-        moveDirection *= moveSpeed;
+        if (Input.GetKey(KeyCode.W))
+        {
+            moveDirection = moveDirection.normalized * moveSpeed;
+            anime.SetBool("walk", true);
+        }
+        else
+        {
+            anime.SetBool("walk", false);
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            moveDirection = moveDirection.normalized * moveSpeed;
+            anime.SetBool("back", true);
+        }
+        else
+        {
+            anime.SetBool("back", false);
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            moveDirection = moveDirection.normalized * moveSpeed;
+            anime.SetBool("right", true);
+        }
+        else
+        {
+            anime.SetBool("right", false);
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            moveDirection = moveDirection.normalized * moveSpeed;
+            anime.SetBool("left", true);
+        }
+        else
+        {
+            anime.SetBool("left", false);
+        }
+        if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.LeftShift))
+        {
+            moveDirection = moveDirection.normalized * runSpeed;
+            anime.SetBool("sprintwalk", true);
+        }
+        else
+        {
+            anime.SetBool("sprintwalk", false);
+        }
         moveDirection.y -= gravity * Time.deltaTime;
         characterController.Move(moveDirection * Time.deltaTime);
+        // Rotate the character to face the same direction as the camera
+        Vector3 lookDirection = playerCamera.transform.forward;
+        lookDirection.y = 0f;
+        transform.rotation = Quaternion.LookRotation(lookDirection);
+        // Handle jumping
+        if (Input.GetButtonDown("Jump") && characterController.isGrounded)
+        {
+            moveDirection.y = jumpForce;
+        }
+
+        // If the player is pressing W, set moveDirection's magnitude to moveSpeed and play the walking animation
+        
+
+        // Handle crouching
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            // Crouch logic
+        }
+
+        // Handle picking up items
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            // Pickup logic
+        }
+
+        // Handle interacting with objects
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            anime.SetBool("gather",true);
+        }
+        else {
+            anime.SetBool("gather",false);
+        }
+    }
 }
